@@ -23,26 +23,20 @@ namespace SpotifyToolsGUI {
             InitializeComponent();
 
             MuteOnAdvertisement.Instance.GUIWindow = this;
+            ShowTrackOverlay.Instance.GUIWindow = this;
 
             // Automatically start MuteAdvertisement.
-            OnMuteStateChanged(MuteOnAdvertisement.Instance.Start());
+            MuteOnAdvertisement.Instance.Start();
+
+            // Automatically start ShowTrackOverlay.
+            ShowTrackOverlay.Instance.Start();
         }
 
         private void BtnToggleMute_Click(object sender, RoutedEventArgs e) {
-            if(!MuteOnAdvertisement.Instance.Enabled) {
-                var result = MuteOnAdvertisement.Instance.Start();
-                OnMuteStateChanged(result);
-            }
-            else {
+            if (!MuteOnAdvertisement.Instance.Enabled)
+                MuteOnAdvertisement.Instance.Start();
+            else
                 MuteOnAdvertisement.Instance.Stop();
-                OnMuteStateChanged(false);
-            }
-        }
-
-        void OnMuteStateChanged(bool start) {
-            txtMuteStatus.Text = start ? "Enabled" : "Disabled";
-            txtMuteStatus.Foreground = start ? Brushes.Green : Brushes.Red;
-            btnToggleMute.Content = start ? "Disable" : "Enable";
         }
     }
 }

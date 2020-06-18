@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Diagnostics;
 using System.Windows.Controls;
+using SpotifyToolsGUI.Tools.Helpers;
+using System.Windows.Media;
 
 namespace SpotifyToolsGUI.Tools {
     class MuteOnAdvertisement {
@@ -25,97 +27,47 @@ namespace SpotifyToolsGUI.Tools {
         public MainWindow GUIWindow;
 
         /// <summary>
-        /// The spotify process which we are listening to.
+        /// Mute on advertisement state.
         /// </summary>
-        public uint SpotifyProcessId;
-
-        /// <summary>
-        /// Changename hook.
-        /// </summary>
-        public IntPtr Hook { get; private set; }
-
-        public bool Enabled => Hook != IntPtr.Zero;
-
-        // Delegate and imports from pinvoke.net:
-        delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType,
-                IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
-
-        [DllImport("user32.dll")]
-        static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr
-                hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess,
-                uint idThread, uint dwFlags);
-
-        [DllImport("user32.dll")]
-        static extern bool UnhookWinEvent(IntPtr hWinEventHook);
-
-        [DllImport("user32.dll")]
-        static extern bool GetWindowThreadProcessId(IntPtr hWinEventHook);
-
-        // Constants from winuser.h
-        const uint EVENT_OBJECT_NAMECHANGE = 0x800C; // hwnd ID idChild is item w/ name change
-        const uint WINEVENT_OUTOFCONTEXT = 0;
-
-        // Need to ensure delegate is not collected while we're using it,
-        // storing it in a class field is simplest way to do this.
-        static WinEventDelegate procDelegate = new WinEventDelegate(WinEventProc);
+        public bool Enabled = false;
         
         /// <summary>
         /// Starts listening to the namechange event and mutes whenever an advertisement is played.
         /// </summary>
-        public bool Start() {
-            var process = Process.GetProcessesByName("Spotify").FirstOrDefault(x => !x.MainWindowTitle.Equals(""));
-            if (process == null) {
-                MessageBox.Show("Could not find the Spotify process");
-                return false;
-            }
-            SpotifyProcessId = (uint)process.Id;
+        public void Start() {
+            if (!WindowsEvents.Instance.Initialize())
+                return;
 
-            if (Hook != IntPtr.Zero) {
-                return false;
-            }
-
-            // Listen for foreground changes across all processes/threads on current desktop...
-            Hook = SetWinEventHook(EVENT_OBJECT_NAMECHANGE, EVENT_OBJECT_NAMECHANGE, IntPtr.Zero,
-                    procDelegate, SpotifyProcessId, 0, WINEVENT_OUTOFCONTEXT);
-
-            return true;
+            WindowsEvents.Instance.TitleChange += OnTitleChange;
+            ChangeMuteState(true);
         }
 
         /// <summary>
         /// Stops listening to the namechange event, advertisement will not be muted after calling this.
         /// </summary>
-        public bool Stop() {
-            if(Hook == IntPtr.Zero) {
-                return false;
-            }
-
-            UnhookWinEvent(Hook);
-            Hook = IntPtr.Zero;
-
-            return true;
+        public void Stop() {
+            WindowsEvents.Instance.TitleChange -= OnTitleChange;
+            ChangeMuteState(false);
         }
 
-        static void WinEventProc(IntPtr hWinEventHook, uint eventType,
-            IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime) {
-            var process = Process.GetProcessById((int)Instance.SpotifyProcessId);
-            if(process == null) {
-                // Process not found, probably the spotify client was killed while the app is open.
-                MessageBox.Show("Could not find the Spotify process.\n" +
-                    "Mute Advertisements is now turned off.");
-                Instance.Stop();
-            }
+        void ChangeMuteState(bool start) {
+            Enabled = start;
+            GUIWindow.txtMuteStatus.Text = start ? "Enabled" : "Disabled";
+            GUIWindow.txtMuteStatus.Foreground = start ? Brushes.Green : Brushes.Red;
+            GUIWindow.btnToggleMute.Content = start ? "Disable" : "Enable";
+        }
 
-            var mute = VolumeMixer.GetApplicationMute(process.Id);
+        private void OnTitleChange(string windowTitle) {
+            Instance.GUIWindow.txtWindowTitle.Text = windowTitle;
+            var mute = VolumeMixer.GetApplicationMute((int)WindowsEvents.Instance.SpotifyProcessId);
 
-            Instance.GUIWindow.txtWindowTitle.Text = process.MainWindowTitle;
-
-            if (!(process.MainWindowTitle.Contains("-") || process.MainWindowTitle.Contains(" "))) {
+            if (!(windowTitle.Contains("-") || windowTitle.Contains(" "))) {
                 // This is an advertisement.
                 // Used this condition to cover probably all the major languages (EN, FR, AR, ...)
-                VolumeMixer.SetApplicationMute(process.Id, true);
+                VolumeMixer.SetApplicationMute((int)WindowsEvents.Instance.SpotifyProcessId, true);
             }
             else if(mute.HasValue && mute.Value) {
-                VolumeMixer.SetApplicationMute(process.Id, false);
+                VolumeMixer.SetApplicationMute((int)WindowsEvents.Instance.SpotifyProcessId, false);
             }
         }
     }

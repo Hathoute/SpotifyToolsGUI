@@ -1,0 +1,18 @@
+﻿<Window x:Class="SpotifyToolsGUI.Windows.TrackOverlay"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SpotifyToolsGUI.Windows"
+        mc:Ignorable="d"
+        Title="TrackOverlay" Height="96" Width="462.5"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        WindowStartupLocation="Manual">
+    <Grid Height="84">
+        <Image x:Name="imgAlbum" HorizontalAlignment="Left" Height="64" Margin="10,10,0,0" VerticalAlignment="Top" Width="64"/>
+        <Label x:Name="lblTitle" Content="Blinding Lights" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="79,10,0,0" FontSize="20"/>
+        <Label x:Name="lblArtist" Content="The Weeknd • After Hours" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="79,41,0,0" FontSize="17"/>
+
+    </Grid>
+</Window>
