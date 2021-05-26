@@ -10,7 +10,7 @@
         ResizeMode="NoResize"
         WindowStartupLocation="Manual">
     <Grid Height="84">
-        <Image x:Name="imgAlbum" HorizontalAlignment="Left" Height="64" Margin="10,10,0,0" VerticalAlignment="Top" Width="64"/>
+        <Image x:Name="imgAlbum" HorizontalAlignment="Left" Height="64" VerticalAlignment="Top" Width="64" Margin="10,10,0,0" Source="uncle-roger-funny.gif"/>
         <Label x:Name="lblTitle" Content="Blinding Lights" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="79,10,0,0" FontSize="20"/>
         <Label x:Name="lblArtist" Content="The Weeknd • After Hours" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="79,41,0,0" FontSize="17"/>
 

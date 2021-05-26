@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Windows.Graphics.Capture;
+using Windows.Media.Control;
+using SpotifyToolsGUI.Tools.Helpers;
 
 namespace SpotifyToolsGUI.Windows {
     /// <summary>
@@ -19,6 +23,7 @@ namespace SpotifyToolsGUI.Windows {
     public partial class TrackOverlay : Window {
         public TrackOverlay() {
             InitializeComponent();
+            Topmost = true;
         }
 
         /// <summary>
@@ -40,16 +45,22 @@ namespace SpotifyToolsGUI.Windows {
                 this.Top = SystemParameters.PrimaryScreenHeight - this.Height + y;
         }
 
-        public void SetOverlayData(SpotifyAPI.Web.FullTrack track) {
-            lblTitle.Content = track.Name;
-            lblArtist.Content = track.Artists[0] + " • " + track.Album.Name;
-            imgAlbum.Source = new BitmapImage(new Uri(track.Album.Images[0].Url));
+        public void SetOverlayData(GlobalSystemMediaTransportControlsSessionMediaProperties mediaProperties) {
+            lblTitle.Content = mediaProperties.Title;
+            lblArtist.Content = mediaProperties.Artist + " • " + mediaProperties.AlbumTitle;
+            imgAlbum.Source = CropBitmapImage(MediaControl.GetBitmapImageFromStream(mediaProperties.Thumbnail));
+            imgAlbum.Stretch = Stretch.UniformToFill;
         }
 
-        public void SetOverlayData(string title, string artist) {
+        public void SetOverlayData(string title, string artist, BitmapImage bmp) {
             lblTitle.Content = title;
             lblArtist.Content = artist;
-            imgAlbum.Source = null;
+            imgAlbum.Source = bmp;
+        }
+
+        private ImageSource CropBitmapImage(BitmapImage img) {
+            var cropRectangle = new Int32Rect(33, 0, 234, 234);
+            return new CroppedBitmap(img, cropRectangle);
         }
     }
 }

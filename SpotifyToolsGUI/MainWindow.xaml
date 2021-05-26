@@ -15,7 +15,7 @@
         <Button x:Name="btnToggleMute" Content="Enable" HorizontalAlignment="Left" Margin="418,66,0,0" VerticalAlignment="Top" Width="48" Click="BtnToggleMute_Click" Height="20"/>
         <Label Content="Track Overlay" HorizontalAlignment="Left" Margin="10,96,0,0" VerticalAlignment="Top" Height="26" Width="127"/>
         <TextBlock x:Name="txtOverlayStatus" HorizontalAlignment="Left" Margin="142,101,0,0" TextWrapping="Wrap" Text="Disabled" VerticalAlignment="Top" FontWeight="Bold" Height="16" Width="49"/>
-        <Button x:Name="btnToggleOverlay" Content="Enable" HorizontalAlignment="Left" Margin="418,97,0,0" VerticalAlignment="Top" Width="48" Click="BtnToggleMute_Click" Height="20"/>
+        <Button x:Name="btnToggleOverlay" Content="Enable" HorizontalAlignment="Left" Margin="418,97,0,0" VerticalAlignment="Top" Width="48" Click="BtnToggleOverlay_Click" Height="20"/>
 
     </Grid>
 </Window>

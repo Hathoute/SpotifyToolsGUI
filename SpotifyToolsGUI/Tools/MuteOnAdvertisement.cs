@@ -61,7 +61,7 @@ namespace SpotifyToolsGUI.Tools {
             Instance.GUIWindow.txtWindowTitle.Text = windowTitle;
             var mute = VolumeMixer.GetApplicationMute((int)WindowsEvents.Instance.SpotifyProcessId);
 
-            if (!(windowTitle.Contains("-") || windowTitle.Contains(" "))) {
+            if (!(windowTitle.Contains("-") || windowTitle.Contains(" ") || windowTitle.Equals("Spotify"))) {
                 // This is an advertisement.
                 // Used this condition to cover probably all the major languages (EN, FR, AR, ...)
                 VolumeMixer.SetApplicationMute((int)WindowsEvents.Instance.SpotifyProcessId, true);

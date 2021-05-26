@@ -38,5 +38,12 @@ namespace SpotifyToolsGUI {
             else
                 MuteOnAdvertisement.Instance.Stop();
         }
+
+        private void BtnToggleOverlay_Click(object sender, RoutedEventArgs e) {
+            if(ShowTrackOverlay.Instance.Running)
+                ShowTrackOverlay.Instance.Stop();
+            else
+                ShowTrackOverlay.Instance.Start();
+        }
     }
 }
